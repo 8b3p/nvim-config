@@ -30,15 +30,21 @@ vim.opt.updatetime = 50
 vim.opt.colorcolumn = "80"
 
 
-vim.api.nvim_create_autocmd("BufWritePre", { pattern = "*", callback = function()
-  vim.lsp.buf.format()
-end })
+vim.api.nvim_create_autocmd("BufWritePre", {
+  pattern = "*",
+  callback = function()
+    vim.lsp.buf.format()
+  end
+})
 
 -- write a function to save the file on change
-vim.api.nvim_create_autocmd("BufLeave", { pattern = "*", callback = function()
-  -- froce write the file
-  vim.cmd("silent! write")
-end })
+vim.api.nvim_create_autocmd("BufLeave", {
+  pattern = "*",
+  callback = function()
+    -- froce write the file
+    vim.cmd("silent! write")
+  end
+})
 
 -- Case insensitive searching UNLESS /C or capital in search
 vim.o.ignorecase = true
@@ -75,9 +81,11 @@ require('Comment').setup()
 
 -- Enable `lukas-reineke/indent-blankline.nvim`
 -- See `:help indent_blankline.txt`
-require('indent_blankline').setup {
-  char = '┊',
-  show_trailing_blankline_indent = false,
+
+require("ibl").setup {
+  whitespace = {
+
+  }
 }
 
 -- Gitsigns
@@ -99,4 +107,3 @@ vim.o.completeopt = 'menuone,noselect'
 
 -- Enable telescope fzf native, if installed
 pcall(require('telescope').load_extension, 'fzf')
-
