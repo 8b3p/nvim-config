@@ -51,7 +51,7 @@ end
 --  Add any additional override configuration in the following tables. They will be passed to
 --  the `settings` field of the server config. You must look up that documentation yourself.
 local servers = {
-  tsserver = {},
+  ts_ls = {},
   rust_analyzer = {},
   lua_ls = {},
 }
@@ -68,20 +68,43 @@ require('mason').setup()
 
 -- Ensure the servers above are installed
 local mason_lspconfig = require 'mason-lspconfig'
+local lspconfig = require('lspconfig')
 
 mason_lspconfig.setup {
   ensure_installed = vim.tbl_keys(servers),
+  automatic_installation = true,
 }
 
-mason_lspconfig.setup_handlers {
-  function(server_name)
-    require('lspconfig')[server_name].setup {
-      capabilities = capabilities,
-      on_attach = on_attach,
-      settings = servers[server_name],
+-- Once servers are installed, set them up manually
+for server_name, server_opts in pairs(servers) do
+  local opts = {
+    on_attach = on_attach,
+    capabilities = capabilities,
+    settings = server_opts,
+  }
+
+  -- You can still do per-server customization here
+  if server_name == "lua_ls" then
+    opts.settings = {
+      Lua = {
+        diagnostics = { globals = { 'vim' } },
+      },
     }
-  end,
-}
+  end
+
+  vim.lsp.config(server_name, opts)
+end
+
+-- old config DEPRECATED
+-- mason_lspconfig.setup_handlers {
+--   function(server_name)
+--     require('lspconfig')[server_name].setup {
+--       capabilities = capabilities,
+--       on_attach = on_attach,
+--       settings = servers[server_name],
+--     }
+--   end,
+-- }
 
 -- nvim-cmp setup
 local cmp = require 'cmp'
